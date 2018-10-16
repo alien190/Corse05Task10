@@ -13,8 +13,13 @@
         android:layout_height="match_parent"
         app:maxValue="1000"
         app:value="234"
+        app:textStyle="italic"
+        app:textSize="64sp"
+        app:valueTextColor="@color/colorAccent"
+        app:maxValueTextColor="@color/colorPrimary"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/customCounter"/>
+        android:id="@+id/customCounter"
+        />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -27,7 +32,8 @@
             android:id="@+id/btnIncrease"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/increase_label" />
+            android:text="@string/increase_label"
+            />
 
         <Button
             android:id="@+id/btnDecrease"

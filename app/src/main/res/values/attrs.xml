@@ -5,7 +5,11 @@
         <attr name="maxValue" format="integer" />
         <attr name="valueTextColor" format="color" />
         <attr name="maxValueTextColor" format="color" />
-        <attr name="textStyleValue" format="flags" />
-        <attr name="textStyleMaxValue" format="flags" />
+        <attr name="textStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="textSize" format="dimension" />
     </declare-styleable>
 </resources>

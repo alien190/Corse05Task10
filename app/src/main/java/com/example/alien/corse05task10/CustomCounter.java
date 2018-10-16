@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -51,23 +52,36 @@ public class CustomCounter extends View {
         setMaxValue(mainTypedArray.getInteger(R.styleable.CustomCounter_maxValue, 0));
         setValue(mainTypedArray.getInteger(R.styleable.CustomCounter_value, 0));
 
-
         mValuePaint = new Paint();
-        mValuePaint.setTextSize(DEFAULT_TEXT_SIZE);
         mValuePaint.setTextAlign(Paint.Align.RIGHT);
         setValueTextColor(mainTypedArray.getColor(R.styleable.CustomCounter_valueTextColor,
                 Color.BLACK));
         mMaxValuePaint = new Paint();
-        mMaxValuePaint.setTextSize(DEFAULT_TEXT_SIZE);
         mMaxValuePaint.setTextAlign(Paint.Align.LEFT);
         setMaxValueTextColor(mainTypedArray.getColor(R.styleable.CustomCounter_maxValueTextColor,
                 Color.BLACK));
+
+        setTextStyle(mainTypedArray.getInteger(R.styleable.CustomCounter_textStyle, 0));
+        setTextSize(mainTypedArray.getDimension(R.styleable.CustomCounter_textSize, 18));
 
         mainTypedArray.recycle();
 
         mMaxValueBounds = new Rect();
         mValueBounds = new Rect();
         mMaxValueBoundsWithSep = new Rect();
+    }
+
+    private void setTextSize(float dimension) {
+        mValuePaint.setTextSize(dimension);
+        mMaxValuePaint.setTextSize(dimension);
+        invalidate();
+    }
+
+    private void setTextStyle(int style) {
+        Typeface typeface = Typeface.create(Typeface.DEFAULT, style);
+        mValuePaint.setTypeface(typeface);
+        mMaxValuePaint.setTypeface(typeface);
+        invalidate();
     }
 
     @Override
@@ -80,7 +94,7 @@ public class CustomCounter extends View {
         mValuePaint.getTextBounds(mMaxValueString, 0, mMaxValueString.length(), mValueBounds);
 
         mWidth = (mMaxValueBoundsWithSep.width() + mValueBounds.width()) * 1.1f;
-        mHeight = Math.max(mValueBounds.height(), mMaxValueBounds.height());
+        mHeight = Math.max(mValueBounds.height(), mMaxValueBounds.height()) * 1.1f;
 
         setMeasuredDimension((int) mWidth, (int) mHeight);
         //setMeasuredDimension(mWidthSpecSize, mHeightSpecSize);
