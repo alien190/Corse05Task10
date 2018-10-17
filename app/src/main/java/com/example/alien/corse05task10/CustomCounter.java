@@ -1,5 +1,6 @@
 package com.example.alien.corse05task10;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -13,11 +14,13 @@ import android.view.View;
 
 public class CustomCounter extends View {
 
-    private static final float DEFAULT_TEXT_SIZE = 120f;
     private static final String SEPARATOR = " / ";
+    private static final long ANIMATION_DURATION = 500;
 
     private int mMaxValue;
     private int mValue;
+    private int mOldValue;
+    private String mOldValueString;
     private int mWidthSpecSize;
     private int mHeightSpecSize;
     private float mWidth;
@@ -29,6 +32,8 @@ public class CustomCounter extends View {
     private Rect mMaxValueBoundsWithSep;
     private String mMaxValueString;
     private String mValueString;
+    private ValueAnimator mValueAnimator;
+    private float mAnimatedPosition;
 
     public CustomCounter(Context context) {
         super(context);
@@ -69,6 +74,16 @@ public class CustomCounter extends View {
         mMaxValueBounds = new Rect();
         mValueBounds = new Rect();
         mMaxValueBoundsWithSep = new Rect();
+
+        mValueAnimator = new ValueAnimator();
+        mValueAnimator.setDuration(ANIMATION_DURATION);
+        mValueAnimator.addUpdateListener(this::onAnimationUpdate);
+
+    }
+
+    private void onAnimationUpdate(ValueAnimator valueAnimator) {
+        mAnimatedPosition = (float) valueAnimator.getAnimatedValue();
+        invalidate();
     }
 
     private void setTextSize(float dimension) {
@@ -95,16 +110,22 @@ public class CustomCounter extends View {
 
         mWidth = (mMaxValueBoundsWithSep.width() + mValueBounds.width()) * 1.1f;
         mHeight = Math.max(mValueBounds.height(), mMaxValueBounds.height()) * 1.1f;
+        mAnimatedPosition = mValueBounds.height();
+        mValueAnimator.setFloatValues(0f, mValueBounds.height());
 
         setMeasuredDimension((int) mWidth, (int) mHeight);
-        //setMeasuredDimension(mWidthSpecSize, mHeightSpecSize);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawText(mValueString, mValueBounds.width(), mMaxValueBounds.height(), mValuePaint);
-        canvas.drawText(SEPARATOR + mMaxValueString, mValueBounds.width(), mValueBounds.height(), mMaxValuePaint);
-        //canvas.drawText(mMaxValueString, 0, mValueBounds.height(), mMaxValuePaint);
+        if (mOldValue < mValue) {
+            canvas.drawText(mValueString, mValueBounds.width(), mAnimatedPosition, mValuePaint);
+            canvas.drawText(mOldValueString, mValueBounds.width(), mAnimatedPosition + mValueBounds.height() * 1.1f, mValuePaint);
+        } else {
+            canvas.drawText(mOldValueString, mValueBounds.width(), mAnimatedPosition - mValueBounds.height() * 0.1f, mValuePaint);
+            canvas.drawText(mValueString, mValueBounds.width(), mAnimatedPosition + mValueBounds.height(), mValuePaint);
+        }
+        canvas.drawText(SEPARATOR + mMaxValueString, mValueBounds.width(), mMaxValueBounds.height(), mMaxValuePaint);
     }
 
     public void setValue(int value) {
@@ -116,6 +137,7 @@ public class CustomCounter extends View {
             mValue = mMaxValue;
         }
         mValueString = String.valueOf(mValue);
+        mOldValueString = mValueString;
         invalidate();
     }
 
@@ -135,10 +157,18 @@ public class CustomCounter extends View {
     }
 
     public void increase() {
-        setValue(mValue + 1);
+        mOldValue = mValue;
+        mOldValueString = String.valueOf(mOldValue);
+        mValue += 1;
+        mValueString = String.valueOf(mValue);
+        mValueAnimator.start();
     }
 
     public void decrease() {
-        setValue(mValue - 1);
+        mOldValue = mValue;
+        mOldValueString = String.valueOf(mOldValue);
+        mValue -= 1;
+        mValueString = String.valueOf(mValue);
+        mValueAnimator.reverse();
     }
 }
